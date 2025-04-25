@@ -226,26 +226,49 @@ gss16_fit_2 <- gss16_wflow_2 %>%
   fit(gss16_train_2)
 ```
 
-```{r}
+```{r eval=TRUE}
 gss16_pred_1 <- predict(gss16_fit_1, gss16_test, type="prob") %>%
   bind_cols(gss16_test %>% select(advfront))
 
 gss16_pred_2 <- predict(gss16_fit_2, gss16_test_2, type="prob") %>%
   bind_cols(gss16_test_2 %>% select(advfront))
+```
 
-gss16_pred_1
-gss16_pred_2
+```{r eval=TRUE}
+gss16_pred_1 <- gss16_pred_1 %>%
+  mutate(advfront=case_when(advfront=="Agree"~ 1, advfront=="Not agree"~ 0)) %>%
+  mutate(advfront=as.factor(advfront))
 
+gss16_pred_2 <- gss16_pred_2 %>%
+  mutate(advfront=case_when(advfront=="Agree"~ 1, advfront=="Not agree"~ 0)) %>%
+  mutate(advfront=as.factor(advfront))
 ```
 
 
-
-```{r eval=FALSE}
+```{r eval=TRUE}
 gss16_pred_1 %>%
   roc_curve(truth = advfront, .pred_Agree, event_level = "second") %>%
   autoplot()
 ```
 
+```{r eval=TRUE}
+gss16_pred_2 %>%
+  roc_curve(truth = advfront, .pred_Agree, event_level = "second") %>%
+  autoplot()
+```
+
+
+```{r eval=TRUE}
+gss16_pred_1 %>%
+  roc_auc(truth = advfront, .pred_Agree, event_level = "second")
+```
+
+```{r eval=TRUE}
+gss16_pred_2 %>%
+  roc_auc(truth = advfront, .pred_Agree, event_level = "second")
+```
+
+**My previous answer still holds up. The second model performs slightly better.**
 
 
 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards.*
@@ -291,6 +314,6 @@ harass5_boot %>%
 
 15. Would you expect a 90% confidence interval to be wider or narrower than the interval you calculated above? Explain your reasoning.
 
-**I would expect a 90% confidence interval to be narrower than the other interval, because it would remove more of the outside observations, narrowing the range.**
+**I would expect a 90% confidence interval to be narrower than the other interval, because it would remove more of the outside observations, making it more precise.**
 
 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
